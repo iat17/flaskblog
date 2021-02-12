@@ -7,6 +7,6 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'postgres://postgres:'
 db = SQLAlchemy(app)
 
 @app.route('/', methods=['GET',])
-def hello_world():
+def index():
     if request.method == 'GET':
-        return 'Hello, World!'
+        return 'Hello'
