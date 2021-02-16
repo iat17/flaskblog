@@ -1,8 +1,7 @@
 from flask import Flask
-from .extensions import db, migrate
+from .extensions import db, migrate, ma
 from .settings import SQLALCHEMY_DATABASE_URI
 from blog import views
-
 
 
 def create_app() -> Flask:
@@ -17,6 +16,8 @@ def create_app() -> Flask:
 def register_extensions(app):
     db.init_app(app)
     migrate.init_app(app, db)
+    ma.init_app(app)
+
 
 
 def register_views(app):

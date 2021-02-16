@@ -1,10 +1,10 @@
-from flask import request
-from flask import Blueprint
+from flask import request, Blueprint, jsonify
+from blog import models
+from blog import serializers
+
 
 simple_page = Blueprint('simple_page', __name__)
 
-
-@simple_page.route('/')
+@simple_page.route('/', methods=['GET'])
 def index():
-    home = "<h1>Welcome</h1>"
-    return home
+    return jsonify({'msg': 'Hi'})
