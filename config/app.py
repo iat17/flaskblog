@@ -7,7 +7,7 @@ from blog import views
 
 def create_app() -> Flask:
     app = Flask(__name__)
-    app.register_blueprint(views.simple_page)
+    register_views(app)
     app.config["SQLALCHEMY_DATABASE_URI"] = SQLALCHEMY_DATABASE_URI
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
     register_extensions(app)
@@ -17,3 +17,7 @@ def create_app() -> Flask:
 def register_extensions(app):
     db.init_app(app)
     migrate.init_app(app, db)
+
+
+def register_views(app):
+    app.register_blueprint(views.simple_page)
