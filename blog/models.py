@@ -10,4 +10,4 @@ class Article(db.Model):
     description = db.Column(db.String(120), nullable=False)
     body = db.Column(db.String(1024), nullable=False)
     created_at = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
-    published = db.Column(db.Boolean, default=True)
+    is_deleted = db.Column(db.Boolean, default=True)
