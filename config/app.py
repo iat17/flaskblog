@@ -9,6 +9,7 @@ def create_app() -> Flask:
     register_views(app)
     app.config["SQLALCHEMY_DATABASE_URI"] = SQLALCHEMY_DATABASE_URI
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
+    app.config["JSON_SORT_KEYS"] = False
     register_extensions(app)
     return app
 
