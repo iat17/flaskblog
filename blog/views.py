@@ -52,7 +52,7 @@ def update_article(id):
     else:
         return abort(400)
 
-@simple_page.route('/articles/delete/<id>', methods=['PUT'])
+@simple_page.route('/articles/<id>', methods=['DELETE'])
 def delete_article(id):
     article = Article.query.get(id)
 
