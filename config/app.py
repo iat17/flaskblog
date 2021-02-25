@@ -22,4 +22,4 @@ def register_extensions(app):
 
 
 def register_views(app):
-    app.register_blueprint(views.simple_page)
+    app.register_blueprint(views.blog_page, url_prefix='/articles')
