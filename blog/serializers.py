@@ -1,10 +1,11 @@
 from config.app import ma
+from marshmallow_sqlalchemy import SQLAlchemyAutoSchema, auto_field
+from blog.models import Article
 
-
-class ArticleSchema(ma.Schema):
+class ArticleSchema(SQLAlchemyAutoSchema):
     class Meta:
-        fields = ('id', 'title', 'description', 'body', 'created_at', 'is_deleted')
+        model = Article
         ordered = True
 
-article_schema = ArticleSchema()
-articles_schema = ArticleSchema(many=True)
+    id = auto_field(dump_only=True)
+    created_at = auto_field(dump_only=True)
