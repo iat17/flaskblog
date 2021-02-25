@@ -1,63 +1,64 @@
-import json
-from flask import request, Blueprint, jsonify, abort
+from flask import request, Blueprint, abort, jsonify
 from .models import Article
-from .serializers import article_schema, articles_schema
+from .serializers import ArticleSchema
 from config.extensions import db
 import datetime
 
+day = 24*60*60
 
-simple_page = Blueprint('simple_page', __name__)
+blog_page = Blueprint('blog_page', __name__)
 
-@simple_page.route('/create', methods=['POST'])
+article_schema = ArticleSchema()
+articles_schema = ArticleSchema(many=True)
+
+@blog_page.route('/', methods=['POST'])
 def add_article():
-    title = request.json["title"]
-    description = request.json["description"]
-    body = request.json["body"]
+    json_data = request.get_json()
+    data = article_schema.load(json_data)
 
-    new_article = Article(title, description, body)
+    new_article = Article(**data)
 
     db.session.add(new_article)
     db.session.commit()
 
-    return article_schema.jsonify(new_article)
+    result = article_schema.dump(Article.query.get(new_article.id))
+    return result
 
-@simple_page.route('/articles', methods=['GET'])
+@blog_page.route('/', methods=['GET'])
 def get_articles():
     all_articles = Article.query.filter(Article.is_deleted==False).order_by(Article.created_at)
     result = articles_schema.dump(all_articles)
     return jsonify(result)
 
-@simple_page.route('/articles/<id>', methods=['GET'])
+@blog_page.route('/<id>', methods=['GET'])
 def get_article(id):
     article = Article.query.get(id)
-    if article:
-        return article_schema.jsonify(article)
+    result = article_schema.dump(article)
+    if article and article.is_deleted==False:
+        return result
     else:
         return abort(404)
 
-@simple_page.route('/articles/<id>', methods=['PUT'])
+@blog_page.route('/<id>', methods=['PUT'])
 def update_article(id):
     article = Article.query.get(id)
 
-    title = request.json["title"]
-    description = request.json["description"]
-    body = request.json["body"]
+    json_data = request.get_json()
+    article.title = json_data["title"]
+    article.description = json_data["description"]
+    article.body = json_data["body"]
 
-    article.title = title
-    article.description = description
-    article.body = body
-    if (datetime.datetime.utcnow() - article.created_at).total_seconds() <= 86400:
+    if (datetime.datetime.utcnow() - article.created_at).total_seconds() <= day:
         db.session.commit()
-        return article_schema.jsonify(article)
+        result = article_schema.dump(Article.query.get(article.id))
+        return result
     else:
         return abort(400)
 
-@simple_page.route('/articles/<id>', methods=['DELETE'])
+@blog_page.route('/<id>', methods=['DELETE'])
 def delete_article(id):
     article = Article.query.get(id)
-
     article.is_deleted = True
 
     db.session.commit()
-
-    return article_schema.jsonify(article)
+    return 'Post deleted'
