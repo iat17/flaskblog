@@ -1,15 +1,16 @@
 from flask import request, Blueprint, abort, jsonify
 from .models import Article
 from .serializers import ArticleSchema
-from config.extensions import db
+from config.extensions import db, basic_auth
 import datetime
 
-DAY = 24*60*60
+DAY = 24 * 60 * 60
 
 blog_page = Blueprint('blog_page', __name__)
 
 
 @blog_page.route('/', methods=['POST'])
+@basic_auth.required
 def add_article():
     json_data = request.get_json()
     article_schema = ArticleSchema()
@@ -44,6 +45,7 @@ def get_article(id):
 
 
 @blog_page.route('/<id>', methods=['PUT'])
+@basic_auth.required
 def update_article(id):
     article = Article.query.get(id)
 
@@ -62,6 +64,7 @@ def update_article(id):
 
 
 @blog_page.route('/<id>', methods=['DELETE'])
+@basic_auth.required
 def delete_article(id):
     article = Article.query.get(id)
     article.is_deleted = True
