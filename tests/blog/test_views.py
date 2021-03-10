@@ -1,5 +1,7 @@
 from base64 import b64encode
 
+from datetime import datetime, timedelta
+
 from flask import Response
 
 from blog.models import Article
@@ -58,3 +60,37 @@ class TestArticleViews:
 
         assert response.status_code == 200
         assert article_fixt.is_deleted
+
+    def test_create_update_delete_when_not_auth(self, test_client, article_fixt):
+        response: Response = test_client.post('/articles/', json={
+            'title': 'test1',
+            'description': 'test1',
+            'body': 'test1'
+        })
+
+        assert response.status_code == 401
+
+        response: Response = test_client.put(f'/articles/{article_fixt.id}/', json={
+            'title': 'test1',
+            'description': 'test1',
+            'body': 'test1'
+        })
+
+        assert response.status_code == 401
+
+        response: Response = test_client.delete(f'/articles/{article_fixt.id}/')
+
+        assert response.status_code == 401
+
+    def test_update_article_when_created_at_more_than_day(self, test_client, article_fixt):
+        test_date = (datetime.utcnow() - timedelta(days=1))
+        article_fixt.created_at = test_date
+
+        response: Response = test_client.put(
+            f'/articles/{article_fixt.id}/', headers=auth(), json={
+                'title': 'test1',
+                'description': 'test1',
+                'body': 'test1',
+            })
+
+        assert response.status_code == 400
