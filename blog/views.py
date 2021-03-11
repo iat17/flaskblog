@@ -27,13 +27,13 @@ def add_article():
 
 @blog_page.route('/', methods=['GET'])
 def get_articles():
-    all_articles = Article.query.filter(Article.is_deleted == False).order_by(Article.created_at)
+    all_articles = Article.query.filter(Article.is_deleted == False).order_by(Article.created_at.desc())
     articles_schema = ArticleSchema(many=True)
     result = articles_schema.dump(all_articles)
     return jsonify(result)
 
 
-@blog_page.route('/<id>', methods=['GET'])
+@blog_page.route('/<id>/', methods=['GET'])
 def get_article(id):
     article = Article.query.get(id)
     article_schema = ArticleSchema()
@@ -44,7 +44,7 @@ def get_article(id):
         return abort(404)
 
 
-@blog_page.route('/<id>', methods=['PUT'])
+@blog_page.route('/<id>/', methods=['PUT'])
 @basic_auth.required
 def update_article(id):
     article = Article.query.get(id)
@@ -63,7 +63,7 @@ def update_article(id):
         return abort(400)
 
 
-@blog_page.route('/<id>', methods=['DELETE'])
+@blog_page.route('/<id>/', methods=['DELETE'])
 @basic_auth.required
 def delete_article(id):
     article = Article.query.get(id)
