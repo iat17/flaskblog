@@ -1,12 +1,15 @@
 version: '3'
 volumes:
-  postgres_data:
-  redis_data:
+  postgres_data: {}
+  postgres_data_backups: {}
 
 services:
     postgres:
         image: postgres:9.6
+        restart: always
+        command: postgres -c listen_addresses='*'
         environment:
+            - POSTGRES_HOST=postgres
             - POSTGRES_USER=postgres
             - POSTGRES_PASSWORD=postgres
             - POSTGRES_DB=postgres
@@ -15,3 +18,12 @@ services:
             - postgres_data:/var/lib/postgresql/data/pgdata
         ports:
         - "5432:5432"
+    app:
+      build: .
+      volumes:
+        - .:/app
+      ports:
+        - "5000:5000"
+      depends_on:
+        - postgres
+
